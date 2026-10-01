@@ -1,0 +1,51 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CCFA Study Hub</title>
+<style>
+:root{--bg:#f6f6f7;--c:#fff;--t:#1b1b1f;--m:#666;--r:#e4002b;--b:#e3e3e6}
+@media(prefers-color-scheme:dark){:root{--bg:#141417;--c:#1e1e23;--t:#eee;--m:#9a9aa3;--b:#33333a}}
+*{box-sizing:border-box}body{margin:0;font:15px/1.55 system-ui,sans-serif;background:var(--bg);color:var(--t);display:flex;min-height:100vh}
+nav{width:240px;background:var(--c);border-right:1px solid var(--b);padding:16px;position:sticky;top:0;height:100vh;overflow:auto}
+nav h1{font-size:17px;color:var(--r);margin:0 0 12px}nav button{display:block;width:100%;text-align:left;background:none;border:0;padding:8px 10px;border-radius:8px;color:var(--t);cursor:pointer;font:inherit}
+nav button.a,nav button:hover{background:var(--bg);color:var(--r)}nav small{color:var(--m);display:block;margin:14px 10px 4px}
+main{flex:1;padding:24px;max-width:900px}.card{background:var(--c);border:1px solid var(--b);border-radius:12px;padding:18px;margin-bottom:14px}
+h2{margin-top:0}h3{margin:14px 0 6px;font-size:14px;color:var(--r);text-transform:uppercase;letter-spacing:.04em}
+.btn{background:var(--r);color:#fff;border:0;padding:9px 16px;border-radius:8px;cursor:pointer;font:inherit}.btn.g{background:var(--c);color:var(--t);border:1px solid var(--b)}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;border:1px solid var(--b);border-radius:8px;background:var(--c);color:var(--t);cursor:pointer;font:inherit}
+.opt:hover{border-color:var(--r)}.opt.s{border-color:var(--r);background:rgba(228,0,43,.08)}.opt.ok{border-color:#1a9c4b;background:rgba(26,156,75,.12)}.opt.no{border-color:#c0392b;background:rgba(192,57,43,.12)}
+.bar{height:8px;background:var(--b);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--r)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}.tag{color:var(--m);font-size:13px}
+.ck label{display:block;padding:3px 0}@media(max-width:700px){body{flex-direction:column}nav{width:100%;height:auto;position:static}}
+</style></head><body>
+<nav><h1>🦅 CCFA Study Hub</h1><button data-v="home">Início</button><button data-v="plan">Como estudar</button><small>TÓPICOS</small><div id="tl"></div><small>PRÁTICA</small><button data-v="quiz">Practice Exams (EN)</button><button data-v="hist">History &amp; Study list</button></nav>
+<main id="m"></main>
+<script src="data.js"></script>
+<script src="e2.js"></script><script src="e3.js"></script><script src="e4.js"></script><script src="e5.js"></script>
+<script>
+const $=s=>document.querySelector(s),m=$("#m");let st={};
+const prog=JSON.parse(localStorage.getItem("ccfa")||"{}");const save=()=>localStorage.setItem("ccfa",JSON.stringify(prog));
+$("#tl").innerHTML=TOPICS.map(t=>`<button data-v="t${t.id}">${t.id}. ${t.t}</button>`).join("");
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+function go(v){document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("a",b.dataset.v==v));window.scrollTo(0,0);
+ if(v=="home")home();else if(v=="plan")plan();else if(v=="quiz")examList();else if(v=="hist")historyView();else topic(+v.slice(1))}
+function home(){const done=Object.values(prog).filter(x=>x).length;
+ m.innerHTML=`<div class="card"><h2>Preparatório CrowdStrike Certified Falcon Administrator</h2><p>Estude os 8 domínios, pratique no console e faça o simulado de 60 questões em 90 minutos.</p>
+ <div class="bar"><i style="width:${done/TOPICS.length*100}%"></i></div><p class="tag">${done}/8 tópicos concluídos</p>
+ <ul>${EXAM.info.map(i=>`<li>${i}</li>`).join("")}</ul><button class="btn" onclick="go('quiz')">Iniciar simulado</button></div>
+ <div class="grid">${TOPICS.map(t=>`<div class="card" style="cursor:pointer" onclick="go('t${t.id}')"><b>${t.id}. ${t.t}</b><p class="tag">${t.obj.length} objetivos ${prog[t.id]?"✅":""}</p></div>`).join("")}</div>`}
+function plan(){m.innerHTML=`<div class="card"><h2>Como estudar (plano de 4 semanas)</h2>
+<h3>Semana 1</h3><p>Domínios 1–2: usuários/roles e sensores. Instale um sensor em VM.</p>
+<h3>Semana 2</h3><p>Domínios 3–4: hosts (RFM, inativos, retenção) e host groups.</p>
+<h3>Semana 3</h3><p>Domínios 5–6: políticas, precedência, IOA, IOC e exclusões.</p>
+<h3>Semana 4</h3><p>Domínios 7–8 + Store/Fusion. Faça 2 simulados e revise erros por domínio.</p>
+<h3>Leituras oficiais</h3><ul><li>Sensor Deployment and Maintenance</li><li>Falcon Management</li><li>Endpoint Security (Response, Configuration, Additional Features)</li><li>CrowdStrike Marketplace / Store</li><li>CrowdStrike APIs — General Info</li></ul>
+<h3>Dicas</h3><ul><li>Prefira prática a decorar: cada objetivo tem um passo a passo no console.</li><li>Domine números: 45 dias, 90 dias, N-2, 15 dias de trial, 7 dias, 32 caracteres.</li><li>Em dúvida, escolha o menor privilégio e o escopo mais estreito.</li></ul></div>
+${studyHtml()}`}
+function studyHtml(){const c=JSON.parse(localStorage.getItem('stg')||'{}');return STUDY.map((g,gi)=>`<div class="card"><h2>${g[0]}</h2><p class="tag">Marque o que já estudou; ao lado, o capítulo da documentação com o passo a passo.</p>${g[1].map((sec,si)=>`<h3>${sec[0]}</h3><div class="ck">${sec[1].map((it,ii)=>{const k=gi+'_'+si+'_'+ii;return `<label><input type="checkbox" ${c[k]?'checked':''} onchange="sg('${k}',this.checked)"> <b>${it[0]}</b><br><span class="tag">📖 ${it[1]}</span></label>`}).join('')}</div>`).join('')}</div>`).join('')}
+function sg(k,v){const c=JSON.parse(localStorage.getItem('stg')||'{}');c[k]=v;localStorage.setItem('stg',JSON.stringify(c))}
+function topic(id){const t=TOPICS.find(x=>x.id==id);const c=JSON.parse(localStorage.getItem("chk"+id)||"[]");
+ m.innerHTML=`<div class="card"><h2>${t.id}. ${t.t}</h2><h3>Objetivos do exame</h3><div class="ck">${t.obj.map((o,i)=>`<label><input type="checkbox" ${c[i]?"checked":""} onchange="chk(${id},${i},this.checked)"> ${o}</label>`).join("")}</div>
+ <h3>Pontos-chave</h3><ul>${t.key.map(k=>`<li>${k}</li>`).join("")}</ul><h3>Na prática (console Falcon)</h3><ol>${t.how.map(k=>`<li>${k}</li>`).join("")}</ol>
+ <h3>Aprofundamento</h3><ul>${DEEP[t.id].map(k=>`<li>${k}</li>`).join("")}</ul><h3>Como estudar</h3><p>${t.study}</p><button class="btn" onclick="startDomain(${id})">Praticar este tópico (20 questões em inglês)</button></div>`}
+function chk(id,i,v){const c=JSON.parse(localStorage.getItem("chk"+id)||"[]");c[i]=v;localStorage.setItem("chk"+id,JSON.stringify(c));
+ prog[id]=TOPICS.find(x=>x.id==id).obj.every((_,j)=>c[j]);save()}
+</script>
+<script src="quiz.js"></script><script>home()</script></body></html>
